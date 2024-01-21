@@ -3,7 +3,7 @@
   "version": "0.0.1",
   "scripts": {
     "dev": "nodemon ./src/server.ts",
-    "format": "npx prettier . --check",
+    "format": "npx prettier . --write",
     "test": "vitest",
     "prepare": "husky install"
   },
