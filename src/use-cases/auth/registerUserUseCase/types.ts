@@ -9,6 +9,16 @@ export type Credentials = {
   password: string
 }
 
+export type User = {
+  name: string
+  email: string
+  id: number
+}
+
+export type RegisterUserResponse = {
+  data: User
+}
+
 export type ExistingUser = NewUser & {id: number}
 
 export type ExistingUsers = ExistingUser[]

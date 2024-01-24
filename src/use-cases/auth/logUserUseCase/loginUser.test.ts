@@ -2,6 +2,7 @@ import { describe, it, expect, beforeEach } from 'vitest'
 import { InMemoryAuthRepository } from '../../../repositories/inMemoryAuthRepository'
 import { AuthRepository } from '../../../repositories/interfaces/authRepository'
 import { LoginUserUseCase } from './loginUserUseCase'
+import { log } from 'node:util'
 
 
 describe('register use case', () => {
@@ -27,6 +28,8 @@ describe('register use case', () => {
     // ACT
     const loggedUser = await loginUserUseCase.execute(userToLog)
     // ASSERT
+    expect(loggedUser.token).toBeDefined()
+    expect(loggedUser.token).toBeTruthy()
     expect(loggedUser.data).toStrictEqual({
       name: 'Joe',
       email: 'john.doe@gmail.com',
