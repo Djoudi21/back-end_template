@@ -8,7 +8,11 @@ export class AuthController {
     const authRepository = new InMemoryAuthRepository()
     const registerUseCase = new RegisterUserUseCase(authRepository)
     const response = await registerUseCase.execute(credentials)
-    reply.send(response)
+    if(response.data.status === 'success') {
+      reply.status(200).send(response)
+    } else {
+      reply.status(400).send(response)
+    }
   }
 
   async login(req: any, reply: any): Promise<any> {
@@ -16,6 +20,10 @@ export class AuthController {
     const authRepository = new InMemoryAuthRepository()
     const loginUserUseCase = new LoginUserUseCase(authRepository)
     const response = await loginUserUseCase.execute(credentials)
-    reply.send(response)
+    if(response.data.status === 'success') {
+      reply.status(200).send(response)
+    } else {
+      reply.status(400).send(response)
+    }
   }
 }

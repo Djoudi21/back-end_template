@@ -15,7 +15,16 @@ export class InMemoryAuthRepository implements AuthRepository {
   async register(user: NewUser): Promise<any> {
     // Check if the user already exists
     const isExistingUser = this.users.find(existingUser => existingUser.name === user.name)
-    if (isExistingUser) return Promise.resolve(this.users)
+    if (isExistingUser) {
+      // Return promise with created user without password
+      const response = {
+        data: {
+          status: "error",
+          message: "User already exists",
+        },
+      }
+      return Promise.resolve(response)
+    }
 
     // Encrypt the password before saving it
     const hashedPassword = await bcrypt.hash(user.password, 10);
@@ -27,7 +36,11 @@ export class InMemoryAuthRepository implements AuthRepository {
     // Return promise with created user without password
     const response = {
       data: {
-        ...rest
+        status: "success",
+        message: "User successfully registered",
+        user: {
+          ...rest
+        },
       },
     }
     return Promise.resolve(response)
