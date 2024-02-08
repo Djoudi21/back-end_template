@@ -1,5 +1,4 @@
 export type NewUser = {
-  name: string,
   email: string,
   password: string
 }
@@ -15,10 +14,17 @@ export type User = {
   id: number
 }
 
-export type RegisterUserResponse = {
-  data: User
-}
-
 export type ExistingUser = NewUser & {id: number}
 
 export type ExistingUsers = ExistingUser[]
+
+export type RegisterUserResponse = {
+  data: {
+    status: 201 | 409 | 500
+    message: string
+    user: {
+      id: number
+      email: string
+    }
+  }
+}

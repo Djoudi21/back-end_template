@@ -8,11 +8,7 @@ export class AuthController {
     const authRepository = new InMemoryAuthRepository()
     const registerUseCase = new RegisterUserUseCase(authRepository)
     const response = await registerUseCase.execute(credentials)
-    if(response.data.status === 'success') {
-      reply.status(200).send(response)
-    } else {
-      reply.status(400).send(response)
-    }
+    reply.status(response.data.status).send(response)
   }
 
   async login(req: any, reply: any): Promise<any> {

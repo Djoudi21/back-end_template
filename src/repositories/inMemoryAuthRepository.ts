@@ -10,16 +10,16 @@ const secretKey:  Secret | undefined = isTestingEnvironment ? 'testing_secret': 
 const expiresIn:  string | number | undefined =  isTestingEnvironment ? '1m': process.env.JWT_EXPIRATION_TIME
 
 export class InMemoryAuthRepository implements AuthRepository {
-  public users: ExistingUsers = []
+  public users: ExistingUsers = [{email: 'a@a.com', password: 'aaa', id: 1}]
 
   async register(user: NewUser): Promise<any> {
     // Check if the user already exists
-    const isExistingUser = this.users.find(existingUser => existingUser.name === user.name)
+    const isExistingUser = this.users.find(existingUser => existingUser.email === user.email)
     if (isExistingUser) {
       // Return promise with created user without password
       const response = {
         data: {
-          status: "error",
+          status: 409,
           message: "User already exists",
         },
       }
@@ -36,7 +36,7 @@ export class InMemoryAuthRepository implements AuthRepository {
     // Return promise with created user without password
     const response = {
       data: {
-        status: "success",
+        status: 201,
         message: "User successfully registered",
         user: {
           ...rest
@@ -59,7 +59,6 @@ export class InMemoryAuthRepository implements AuthRepository {
     // Return promise with found user without password
     const response = {
       data: {
-        name: isExistingUser.name,
         email:isExistingUser.email,
         id:1
       },

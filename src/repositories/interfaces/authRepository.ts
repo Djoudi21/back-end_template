@@ -1,5 +1,8 @@
-import { Credentials, ExistingUser, NewUser } from '../../use-cases/auth/registerUserUseCase/types'
-import { RegisterUserResponse } from '../../types'
+import {
+  Credentials,
+  NewUser,
+  RegisterUserResponse,
+} from '../../use-cases/auth/registerUserUseCase/types'
 
 export interface AuthRepository {
   register: (user: NewUser) => Promise<RegisterUserResponse>
