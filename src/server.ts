@@ -2,6 +2,7 @@ import Fastify from 'fastify'
 import cors from '@fastify/cors'
 import 'dotenv/config'
 import {router} from './routes'
+import { verifyAccessToken } from './middlewares/verifyAccessToken'
 
 const port = Number(process.env.PORT)
 const host = process.env.HOST

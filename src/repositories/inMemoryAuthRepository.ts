@@ -7,7 +7,8 @@ import jwt, { Secret } from 'jsonwebtoken'
 // Check if the code is running in a testing environment
 const isTestingEnvironment = process.env.NODE_ENV === 'test';
 const secretKey:  Secret | undefined = isTestingEnvironment ? 'testing_secret':  process.env.JWT_SECRET;
-const expiresIn:  string | number | undefined =  isTestingEnvironment ? '1m': process.env.JWT_EXPIRATION_TIME
+const refreshExpiresIn:  string | number | undefined =  isTestingEnvironment ? '1m': process.env.JWT_REFRESH_EXPIRATION_TIME
+const accessExpiresIn:  string | number | undefined =  isTestingEnvironment ? '1m': process.env.JWT_ACCESS_EXPIRATION_TIME
 
 export class InMemoryAuthRepository implements AuthRepository {
   public users: ExistingUsers = [{email: 'a@a.com', password: '$2b$10$c8RlA86Wpdxcf1hdrs6SZepYlSkT7YAZVLnFmsemahBNfsLjhdT/e', id: 1}]
@@ -77,15 +78,29 @@ export class InMemoryAuthRepository implements AuthRepository {
       return Promise.resolve(response)
     }
 
-    // If it exists return promise with found user with token and without password
-    const token = jwt.sign({ email: credentials.email }, secretKey, { expiresIn } as jwt.SignOptions);
+    // If it exists return promise with found user with tokens and without password
+    const accessToken = jwt.sign({ email: credentials.email }, secretKey, { expiresIn: accessExpiresIn } as jwt.SignOptions);
+    const refreshToken = jwt.sign({ email: credentials.email }, secretKey, { expiresIn: refreshExpiresIn } as jwt.SignOptions);
     const response = {
       data: {
         status: 200,
         email: user.email,
         id: 1
       },
-      token
+      tokens: {
+        accessToken,
+        refreshToken
+      }
+    }
+    return Promise.resolve(response)
+  }
+
+  async logout(): Promise<any> {
+    const response = {
+      data: {
+        status: 200,
+        message: "User logged out successfully",
+      },
     }
     return Promise.resolve(response)
   }

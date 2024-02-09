@@ -38,6 +38,7 @@ describe('register use case', () => {
       email: 'jane.doe@gmail.com',
       password: 'password'
     }
+
     // ACT
     const res = await loginUserUseCase.execute(userToLog)
 

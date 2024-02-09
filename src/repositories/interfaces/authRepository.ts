@@ -7,4 +7,5 @@ import {
 export interface AuthRepository {
   register: (user: NewUser) => Promise<RegisterUserResponse>
   login: (credentials: Credentials) => Promise<any>
+  logout: () => Promise<any>
 }
