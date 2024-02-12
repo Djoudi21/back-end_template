@@ -8,7 +8,7 @@ import { LogoutUserUseCase } from '../use-cases/auth/logoutUserUseCase/logoutUse
 import { getTokenFromHeaders } from '../utils'
 
 export class AuthController {
-  async register(req: any, reply: any): Promise<any> {
+  async register(req: any, reply: any){
     const credentials = req.body.data
     const authRepository = new InMemoryAuthRepository()
     const registerUseCase = new RegisterUserUseCase(authRepository)
@@ -16,7 +16,7 @@ export class AuthController {
     reply.status(response.data.status).send(response)
   }
 
-  async login(req: any, reply: any): Promise<any> {
+  async login(req: any, reply: any) {
     const credentials = req.body.data
     const authRepository = new InMemoryAuthRepository()
     const loginUserUseCase = new LoginUserUseCase(authRepository)
@@ -24,7 +24,7 @@ export class AuthController {
     reply.status(response.data.status).send(response)
   }
 
-  async logout(req: any, reply: any): Promise<any> {
+  async logout(req: any, reply: any) {
     const authRepository = new InMemoryAuthRepository()
     const logoutUserUseCase = new LogoutUserUseCase(authRepository)
     await logoutUserUseCase.execute()

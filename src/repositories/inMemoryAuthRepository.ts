@@ -19,7 +19,7 @@ const accessExpiresIn:  string | number | undefined =  isTestingEnvironment ? '1
 export class InMemoryAuthRepository implements AuthRepository {
   public users: ExistingUsers = [{email: 'a@a.com', password: '$2b$10$c8RlA86Wpdxcf1hdrs6SZepYlSkT7YAZVLnFmsemahBNfsLjhdT/e', id: 1}]
 
-  async register(user: NewUser): Promise<any> {
+  async register(user: NewUser): Promise<RegisterUserResponse | RegisterUserResponseError> {
     // Check if the user already exists
     const existingUser = this.users.find(existingUser => existingUser.email === user.email)
 
