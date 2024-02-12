@@ -2,6 +2,7 @@ import { Credentials, ExistingUsers, NewUser } from '../use-cases/auth/registerU
 import { AuthRepository } from './interfaces/authRepository'
 import bcrypt from 'bcrypt'
 import jwt, { Secret } from 'jsonwebtoken'
+import { LoginUserResponse, LoginUserResponseError } from '../types'
 
 
 // Check if the code is running in a testing environment
@@ -48,13 +49,13 @@ export class InMemoryAuthRepository implements AuthRepository {
     return Promise.resolve(response)
   }
 
-  async login(credentials: Credentials): Promise<any> {
+  async login(credentials: Credentials): Promise<LoginUserResponse | LoginUserResponseError> {
     // Check if the user exists
     const user = this.users.find(user => user.email === credentials.email)
 
     // If it doesn't exist return promise with not found error message
     if (!user) {
-      const response = {
+      const response: LoginUserResponseError = {
         data: {
           status: 404,
           message: "No user found",
@@ -69,7 +70,7 @@ export class InMemoryAuthRepository implements AuthRepository {
     // If secret key exits compare passwords
     const passwordMatch = await bcrypt.compare(credentials.password, user.password);
     if (!passwordMatch) {
-      const response = {
+      const response: LoginUserResponseError = {
         data: {
           status: 401,
           message: "Unauthorized",
@@ -81,11 +82,13 @@ export class InMemoryAuthRepository implements AuthRepository {
     // If it exists return promise with found user with tokens and without password
     const accessToken = jwt.sign({ email: credentials.email }, secretKey, { expiresIn: accessExpiresIn } as jwt.SignOptions);
     const refreshToken = jwt.sign({ email: credentials.email }, secretKey, { expiresIn: refreshExpiresIn } as jwt.SignOptions);
-    const response = {
+    const response: LoginUserResponse = {
       data: {
         status: 200,
-        email: user.email,
-        id: 1
+        user: {
+          email: user.email,
+          id: 1
+        }
       },
       tokens: {
         accessToken,

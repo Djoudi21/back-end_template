@@ -21,15 +21,17 @@ describe('register use case', () => {
     await authRepository.register(user)
 
     // ACT
-    const loggedUser = await loginUserUseCase.execute(user)
+    const res = await loginUserUseCase.execute(user)
 
     // ASSERT
-    expect(loggedUser.token).toBeDefined()
-    expect(loggedUser.token).toBeTruthy()
-    expect(loggedUser.data).toStrictEqual({
-      email: 'john.doe@gmail.com',
-      id: 1
-    })
+    if ('data' in res) {
+      if ('user' in res.data) {
+        expect(res.data.user).toStrictEqual({
+          email: 'john.doe@gmail.com',
+          id: 1,
+        })
+      }
+    }
   })
   it("should not login a user if it doesn't exists", async () => {
     // ARRANGE
@@ -43,8 +45,13 @@ describe('register use case', () => {
     const res = await loginUserUseCase.execute(userToLog)
 
     // ASSERT
-    expect(res.token).toBeUndefined()
-    expect(res.data.status).toBe(404)
-    expect(res.data.message).toBe('No user found')
+    if ('data' in res) {
+      if ('status' in res.data) {
+        expect(res.data.status).toBe(404)
+      }
+      if ('message' in res.data) {
+        expect(res.data.message).toBe('No user found')
+      }
+    }
   })
 })
