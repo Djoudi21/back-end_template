@@ -1,8 +1,13 @@
-import { Credentials, ExistingUsers, NewUser } from '../use-cases/auth/registerUserUseCase/types'
+import {
+  Credentials,
+  ExistingUsers,
+  NewUser, RegisterUserResponse,
+  RegisterUserResponseError,
+} from '../use-cases/auth/registerUserUseCase/types'
 import { AuthRepository } from './interfaces/authRepository'
 import bcrypt from 'bcrypt'
 import jwt, { Secret } from 'jsonwebtoken'
-import { LoginUserResponse, LoginUserResponseError } from '../types'
+import { LoginUserResponse, LoginUserResponseError } from '../use-cases/auth/logUserUseCase/types'
 
 
 // Check if the code is running in a testing environment
@@ -20,7 +25,7 @@ export class InMemoryAuthRepository implements AuthRepository {
 
     // If exists return promise with conflict error message
     if (existingUser) {
-      const response = {
+      const response: RegisterUserResponseError = {
         data: {
           status: 409,
           message: "User already exists",
@@ -37,7 +42,7 @@ export class InMemoryAuthRepository implements AuthRepository {
     const { password, ...rest } = this.users.slice(-1)[0]
 
     // Finally return promise with created user without password
-    const response = {
+    const response: RegisterUserResponse = {
       data: {
         status: 201,
         message: "User successfully registered",

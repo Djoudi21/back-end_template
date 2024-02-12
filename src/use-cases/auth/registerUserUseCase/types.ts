@@ -1,3 +1,5 @@
+import { User } from '../logUserUseCase/types'
+
 export type NewUser = {
   email: string,
   password: string
@@ -8,23 +10,21 @@ export type Credentials = {
   password: string
 }
 
-export type User = {
-  name: string
-  email: string
-  id: number
-}
-
 export type ExistingUser = NewUser & {id: number}
 
 export type ExistingUsers = ExistingUser[]
 
-export type RegisterUserResponse = {
+export interface RegisterUserResponse {
   data: {
-    status: 201 | 409 | 500
-    message: string
-    user: {
-      id: number
-      email: string
-    }
+    user: User;
+    message: string,
+    status: 201;
+  }
+}
+
+export interface RegisterUserResponseError {
+  data: {
+    message: string;
+    status: 409;
   }
 }

@@ -1,5 +1,22 @@
-import { User } from '../registerUserUseCase/types'
+export interface User {
+  email: string;
+  id: number;
+}
 
-export type LoginUseCaseResponse = {
-  data: User
-} & {token: string}
+export interface LoginUserResponse {
+  data: {
+    user: User;
+    status: 200;
+  }
+  tokens: {
+    accessToken: string,
+    refreshToken: string
+  }
+}
+
+export interface LoginUserResponseError {
+  data: {
+    message: string;
+    status: 401 | 404;
+  }
+}
