@@ -17,7 +17,7 @@ const refreshExpiresIn:  string | number | undefined =  isTestingEnvironment ? '
 const accessExpiresIn:  string | number | undefined =  isTestingEnvironment ? '1m': process.env.JWT_ACCESS_EXPIRATION_TIME
 
 export class InMemoryAuthRepository implements AuthRepository {
-  public users: ExistingUsers = [{email: 'a@a.com', password: '$2b$10$c8RlA86Wpdxcf1hdrs6SZepYlSkT7YAZVLnFmsemahBNfsLjhdT/e', id: 1}]
+  public users: ExistingUsers = [{email: 'a@aa.com', password: '$2b$10$c8RlA86Wpdxcf1hdrs6SZepYlSkT7YAZVLnFmsemahBNfsLjhdT/e', id: 1}]
 
   async register(user: NewUser): Promise<RegisterUserResponse | RegisterUserResponseError> {
     // Check if the user already exists
@@ -41,7 +41,12 @@ export class InMemoryAuthRepository implements AuthRepository {
     this.users.push({ ...user, password: hashedPassword, id: 1 })
     const { password, ...rest } = this.users.slice(-1)[0]
 
+    if (!secretKey) throw new Error('NO SECRET')
+
+
     // Finally return promise with created user without password
+    const accessToken = jwt.sign({ email: user.email }, secretKey, { expiresIn: accessExpiresIn } as jwt.SignOptions);
+    const refreshToken = jwt.sign({ email: user.email }, secretKey, { expiresIn: refreshExpiresIn } as jwt.SignOptions);
     const response: RegisterUserResponse = {
       data: {
         status: 201,
@@ -50,6 +55,10 @@ export class InMemoryAuthRepository implements AuthRepository {
           ...rest
         },
       },
+      tokens: {
+        accessToken,
+        refreshToken
+      }
     }
     return Promise.resolve(response)
   }

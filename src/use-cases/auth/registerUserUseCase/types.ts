@@ -20,6 +20,10 @@ export interface RegisterUserResponse {
     message: string,
     status: 201;
   }
+  tokens: {
+    accessToken: string;
+    refreshToken: string;
+  };
 }
 
 export interface RegisterUserResponseError {

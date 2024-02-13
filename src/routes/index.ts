@@ -1,7 +1,7 @@
 import {FastifyInstance} from "fastify";
 import { AuthController } from '../controllers/authController'
-import { verifyAccessToken } from '../middlewares/verifyAccessToken'
 import { TokenController } from '../controllers/tokenController'
+import { verifyAccessToken } from '../middlewares/verifyAccessToken'
 
 const authController = new AuthController()
 const tokenController = new TokenController()
@@ -24,8 +24,13 @@ export async function router(fastify: FastifyInstance) {
     })
     fastify.route({
         method: 'POST',
-        url: '/verify-refresh-token',
-        handler: tokenController.verifyRefreshToken,
+        url: '/generate-access',
+        handler: tokenController.generateAccess,
+    })
+    fastify.route({
+        method: 'POST',
+        url: '/test',
+        handler: tokenController.toto,
         preHandler: verifyAccessToken
     })
 }

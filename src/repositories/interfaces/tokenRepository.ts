@@ -1,3 +1,3 @@
 export interface TokenRepository {
-  verifyRefreshToken: (refreshToken: string) => Promise<any>
+  generateAccessToken: (refreshToken: string) => Promise<any>
 }
