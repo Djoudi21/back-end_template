@@ -8,6 +8,10 @@ export interface GenerateAccessTokenResponse {
   }
 }
 
+export interface SignTokenPayload{
+  [key: string]: any
+}
+
 export interface GenerateAccessTokenResponseError {
   data: {
     status: 403 | 401,

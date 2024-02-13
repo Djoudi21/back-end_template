@@ -2,16 +2,15 @@ import { TokenRepository } from './interfaces/tokenRepository'
 import jwt, { JwtPayload, Secret } from 'jsonwebtoken'
 import {
   GenerateAccessTokenResponse,
-  GenerateAccessTokenResponseError,
+  GenerateAccessTokenResponseError, SignTokenPayload,
 } from '../use-cases/token/generateAccessTokenUseCase/types'
 
 const isTestingEnvironment = process.env.NODE_ENV === 'test';
 const secretKey:  Secret | undefined = isTestingEnvironment ? 'testing_secret':  process.env.JWT_SECRET;
 const refreshExpiresIn:  string | number | undefined =  isTestingEnvironment ? '1m': process.env.JWT_REFRESH_EXPIRATION_TIME
 
-export class InMemoryTokenRepository implements TokenRepository{
-
-  generateAccessToken(refreshToken: string): Promise<GenerateAccessTokenResponse | GenerateAccessTokenResponseError> {
+export class JwtTokenRepository implements TokenRepository{
+  regenerateAccessToken(refreshToken: string): Promise<GenerateAccessTokenResponse | GenerateAccessTokenResponseError> {
     if (!refreshToken || !secretKey) {
       const response: GenerateAccessTokenResponseError = {
         data: {
@@ -24,12 +23,15 @@ export class InMemoryTokenRepository implements TokenRepository{
 
     try {
       jwt.verify(refreshToken, secretKey) as JwtPayload;
-      const accessToken = jwt.sign({ username: 'user' }, secretKey, { expiresIn: refreshExpiresIn });
+      const payload = {
+        email: 'email'
+      }
+      const accessToken = this.sign(payload, refreshExpiresIn)
       const response: GenerateAccessTokenResponse = {
         data: {
           status: 200,
           tokens: {
-            accessToken,
+            accessToken: accessToken ?? '',
             refreshToken
           }
         },
@@ -45,4 +47,10 @@ export class InMemoryTokenRepository implements TokenRepository{
       return Promise.resolve(response)
     }
   }
+
+  sign (payload: SignTokenPayload, expiresIn: string | number | undefined) {
+    if(!secretKey) return
+    return jwt.sign(payload, secretKey, { expiresIn } as jwt.SignOptions)
+  }
 }
+

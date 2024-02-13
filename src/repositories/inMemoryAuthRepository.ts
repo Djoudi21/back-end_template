@@ -8,6 +8,8 @@ import { AuthRepository } from './interfaces/authRepository'
 import bcrypt from 'bcrypt'
 import jwt, { Secret } from 'jsonwebtoken'
 import { LoginUserResponse, LoginUserResponseError } from '../use-cases/auth/logUserUseCase/types'
+import { TokenRepository } from './interfaces/tokenRepository'
+import { a } from 'vitest/dist/suite-MFRDkZcV'
 
 
 // Check if the code is running in a testing environment
@@ -18,7 +20,10 @@ const accessExpiresIn:  string | number | undefined =  isTestingEnvironment ? '1
 
 export class InMemoryAuthRepository implements AuthRepository {
   public users: ExistingUsers = [{email: 'a@aa.com', password: '$2b$10$c8RlA86Wpdxcf1hdrs6SZepYlSkT7YAZVLnFmsemahBNfsLjhdT/e', id: 1}]
-
+  tokenRepository: TokenRepository
+  constructor(tokenRepository: TokenRepository) {
+    this.tokenRepository = tokenRepository
+  }
   async register(user: NewUser): Promise<RegisterUserResponse | RegisterUserResponseError> {
     // Check if the user already exists
     const existingUser = this.users.find(existingUser => existingUser.email === user.email)
@@ -45,8 +50,9 @@ export class InMemoryAuthRepository implements AuthRepository {
 
 
     // Finally return promise with created user without password
-    const accessToken = jwt.sign({ email: user.email }, secretKey, { expiresIn: accessExpiresIn } as jwt.SignOptions);
-    const refreshToken = jwt.sign({ email: user.email }, secretKey, { expiresIn: refreshExpiresIn } as jwt.SignOptions);
+    const payload = { email: user.email }
+    const accessToken = this.tokenRepository.sign(payload, accessExpiresIn)
+    const refreshToken = this.tokenRepository.sign(payload, refreshExpiresIn)
     const response: RegisterUserResponse = {
       data: {
         status: 201,
@@ -56,8 +62,8 @@ export class InMemoryAuthRepository implements AuthRepository {
         },
       },
       tokens: {
-        accessToken,
-        refreshToken
+        accessToken: accessToken ?? '',
+        refreshToken: refreshToken ?? ''
       }
     }
     return Promise.resolve(response)
@@ -94,8 +100,9 @@ export class InMemoryAuthRepository implements AuthRepository {
     }
 
     // If it exists return promise with found user with tokens and without password
-    const accessToken = jwt.sign({ email: credentials.email }, secretKey, { expiresIn: accessExpiresIn } as jwt.SignOptions);
-    const refreshToken = jwt.sign({ email: credentials.email }, secretKey, { expiresIn: refreshExpiresIn } as jwt.SignOptions);
+    const payload = { email: user.email }
+    const accessToken = this.tokenRepository.sign(payload, accessExpiresIn)
+    const refreshToken = this.tokenRepository.sign(payload, refreshExpiresIn)
     const response: LoginUserResponse = {
       data: {
         status: 200,
@@ -105,8 +112,8 @@ export class InMemoryAuthRepository implements AuthRepository {
         }
       },
       tokens: {
-        accessToken,
-        refreshToken
+        accessToken: accessToken ?? '',
+        refreshToken: refreshToken ?? ''
       }
     }
     return Promise.resolve(response)

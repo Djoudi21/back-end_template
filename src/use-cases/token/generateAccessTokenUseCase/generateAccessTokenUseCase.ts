@@ -7,6 +7,6 @@ export class GenerateAccessTokenUseCase {
     this.tokenRepository = tokenRepository
   }
   execute(refreshToken: string): Promise<GenerateAccessTokenResponse | GenerateAccessTokenResponseError> {
-    return this.tokenRepository.generateAccessToken(refreshToken)
+    return this.tokenRepository.regenerateAccessToken(refreshToken)
   }
 }
