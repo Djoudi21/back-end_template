@@ -1,17 +1,20 @@
-import { describe, it, expect, beforeEach } from 'vitest'
+import { beforeEach, describe, expect, it } from 'vitest'
 import { InMemoryAuthRepository } from '../../../repositories/inMemoryAuthRepository'
-import { AuthRepository } from '../../../repositories/interfaces/authRepository'
+import { type AuthRepository } from '../../../repositories/interfaces/authRepository'
 import { LogoutUserUseCase } from './logoutUserUseCase'
-
+import { type TokenRepository } from '../../../repositories/interfaces/tokenRepository'
+import { JwtTokenRepository } from '../../../repositories/jwtTokenRepository'
 
 describe('logout use case', () => {
+  let tokenRepository: TokenRepository
   let authRepository: AuthRepository
   let logoutUserUseCase: LogoutUserUseCase
   beforeEach(() => {
-    authRepository = new InMemoryAuthRepository()
+    tokenRepository = new JwtTokenRepository()
+    authRepository = new InMemoryAuthRepository(tokenRepository)
     logoutUserUseCase = new LogoutUserUseCase(authRepository)
   })
-  it("should log out a user", async () => {
+  it('should log out a user', async () => {
     // ARRANGE
     await authRepository.logout()
 
