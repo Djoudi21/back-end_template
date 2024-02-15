@@ -14,8 +14,8 @@ import { type TokenRepository } from './interfaces/tokenRepository'
 // Check if the code is running in a testing environment
 const isTestingEnvironment = process.env.NODE_ENV === 'test'
 const secretKey: Secret | undefined = isTestingEnvironment ? 'testing_secret' : process.env.JWT_SECRET
-const refreshExpiresIn: string | number | undefined = isTestingEnvironment ? '1m' : process.env.JWT_REFRESH_EXPIRATION_TIME
-const accessExpiresIn: string | number | undefined = isTestingEnvironment ? '1m' : process.env.JWT_ACCESS_EXPIRATION_TIME
+const refreshExpiresIn: string | number = isTestingEnvironment ? '1m' : process.env.JWT_REFRESH_EXPIRATION_TIME ?? '2m'
+const accessExpiresIn: string | number = isTestingEnvironment ? '1m' : process.env.JWT_ACCESS_EXPIRATION_TIME ?? '2m'
 
 export class InMemoryAuthRepository implements AuthRepository {
   public users: ExistingUsers = [{ email: 'a@aa.com', password: '$2b$10$c8RlA86Wpdxcf1hdrs6SZepYlSkT7YAZVLnFmsemahBNfsLjhdT/e', id: 1 }]

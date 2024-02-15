@@ -1,11 +1,12 @@
-import { describe, it, expect, beforeEach } from 'vitest'
+import { beforeEach, describe, expect, it } from 'vitest'
 import { InMemoryAuthRepository } from '../../../repositories/inMemoryAuthRepository'
-import { AuthRepository } from '../../../repositories/interfaces/authRepository'
+import { type AuthRepository } from '../../../repositories/interfaces/authRepository'
 import { LoginUserUseCase } from './loginUserUseCase'
-import { log } from 'node:util'
-
+import { type TokenRepository } from '../../../repositories/interfaces/tokenRepository'
+import { JwtTokenRepository } from '../../../repositories/jwtTokenRepository'
 
 describe('register use case', () => {
+  let tokenRepository: TokenRepository
   let authRepository: AuthRepository
   let loginUserUseCase: LoginUserUseCase
   const user = {
@@ -13,10 +14,11 @@ describe('register use case', () => {
     password: 'password'
   }
   beforeEach(() => {
-    authRepository = new InMemoryAuthRepository()
+    tokenRepository = new JwtTokenRepository()
+    authRepository = new InMemoryAuthRepository(tokenRepository)
     loginUserUseCase = new LoginUserUseCase(authRepository)
   })
-  it("should login a user if it exists", async () => {
+  it('should login a user if it exists', async () => {
     // ARRANGE
     await authRepository.register(user)
 
@@ -28,7 +30,7 @@ describe('register use case', () => {
       if ('user' in res.data) {
         expect(res.data.user).toStrictEqual({
           email: 'john.doe@gmail.com',
-          id: 1,
+          id: 1
         })
       }
     }

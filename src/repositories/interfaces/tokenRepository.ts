@@ -2,5 +2,5 @@ import { type SignTokenPayload } from '../../use-cases/token/generateAccessToken
 
 export interface TokenRepository {
   regenerateAccessToken: (refreshToken: string) => Promise<any>
-  sign: (payload: SignTokenPayload, expiresIn: string | number | undefined) => string | undefined
+  sign: (payload: SignTokenPayload, expiresIn: string | number) => string | undefined
 }

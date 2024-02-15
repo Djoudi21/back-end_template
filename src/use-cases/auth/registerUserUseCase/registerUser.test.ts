@@ -1,14 +1,17 @@
-import { describe, it, expect, beforeEach } from 'vitest'
-import {  RegisterUserUseCase } from './registerUserUseCase'
+import { beforeEach, describe, expect, it } from 'vitest'
+import { RegisterUserUseCase } from './registerUserUseCase'
 import { InMemoryAuthRepository } from '../../../repositories/inMemoryAuthRepository'
-import { AuthRepository } from '../../../repositories/interfaces/authRepository'
-
+import { type AuthRepository } from '../../../repositories/interfaces/authRepository'
+import type { TokenRepository } from '../../../repositories/interfaces/tokenRepository'
+import { JwtTokenRepository } from '../../../repositories/jwtTokenRepository'
 
 describe('register use case', () => {
+  let tokenRepository: TokenRepository
   let authRepository: AuthRepository
   let registerUserUseCase: RegisterUserUseCase
   beforeEach(() => {
-    authRepository = new InMemoryAuthRepository()
+    tokenRepository = new JwtTokenRepository()
+    authRepository = new InMemoryAuthRepository(tokenRepository)
     registerUserUseCase = new RegisterUserUseCase(authRepository)
   })
   it("should register a user if doesn't exists", async () => {
@@ -25,7 +28,7 @@ describe('register use case', () => {
     expect(createdUser.data.status).toBe(201)
     expect(createdUser.data.message).toBe('User successfully registered')
   })
-  it("should not register a user if exists", async () => {
+  it('should not register a user if exists', async () => {
     // ARRANGE
     await authRepository.register({
       email: 'john.doe@gmail.com',

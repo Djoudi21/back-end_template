@@ -8,7 +8,7 @@ import {
 
 const isTestingEnvironment = process.env.NODE_ENV === 'test'
 const secretKey: Secret | undefined = isTestingEnvironment ? 'testing_secret' : process.env.JWT_SECRET
-const refreshExpiresIn: string | number | undefined = isTestingEnvironment ? '1m' : process.env.JWT_REFRESH_EXPIRATION_TIME
+const refreshExpiresIn: string | number = isTestingEnvironment ? '1m' : process.env.JWT_REFRESH_EXPIRATION_TIME ?? '2m'
 
 export class JwtTokenRepository implements TokenRepository {
   async regenerateAccessToken (refreshToken: string): Promise<GenerateAccessTokenResponse | GenerateAccessTokenResponseError> {
@@ -46,7 +46,7 @@ export class JwtTokenRepository implements TokenRepository {
     }
   }
 
-  sign (payload: SignTokenPayload, expiresIn: string | number | undefined): string | undefined {
+  sign (payload: SignTokenPayload, expiresIn: string | number): string | undefined {
     if (secretKey === undefined) return
     return jwt.sign(payload, secretKey, { expiresIn } satisfies jwt.SignOptions)
   }
