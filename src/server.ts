@@ -16,7 +16,7 @@ void fastify.register(cors, {
 
 // Run the server!
 fastify.listen({ port, host }, function (err, address) {
-  if (err != null) {
+  if (err !== null) {
     fastify.log.error(err)
   }
   fastify.log.info(`server listening on ${address}`)
