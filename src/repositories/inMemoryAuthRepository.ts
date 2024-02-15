@@ -1,109 +1,105 @@
 import {
-  Credentials,
-  ExistingUsers,
-  NewUser, RegisterUserResponse,
-  RegisterUserResponseError,
+  type Credentials,
+  type ExistingUsers,
+  type NewUser,
+  type RegisterUserResponse,
+  type RegisterUserResponseError
 } from '../use-cases/auth/registerUserUseCase/types'
-import { AuthRepository } from './interfaces/authRepository'
+import { type AuthRepository } from './interfaces/authRepository'
 import bcrypt from 'bcrypt'
-import jwt, { Secret } from 'jsonwebtoken'
-import { LoginUserResponse, LoginUserResponseError } from '../use-cases/auth/logUserUseCase/types'
-import { TokenRepository } from './interfaces/tokenRepository'
-import { a } from 'vitest/dist/suite-MFRDkZcV'
-
+import { type Secret } from 'jsonwebtoken'
+import { type LoginUserResponse, type LoginUserResponseError } from '../use-cases/auth/logUserUseCase/types'
+import { type TokenRepository } from './interfaces/tokenRepository'
 
 // Check if the code is running in a testing environment
-const isTestingEnvironment = process.env.NODE_ENV === 'test';
-const secretKey:  Secret | undefined = isTestingEnvironment ? 'testing_secret':  process.env.JWT_SECRET;
-const refreshExpiresIn:  string | number | undefined =  isTestingEnvironment ? '1m': process.env.JWT_REFRESH_EXPIRATION_TIME
-const accessExpiresIn:  string | number | undefined =  isTestingEnvironment ? '1m': process.env.JWT_ACCESS_EXPIRATION_TIME
+const isTestingEnvironment = process.env.NODE_ENV === 'test'
+const secretKey: Secret | undefined = isTestingEnvironment ? 'testing_secret' : process.env.JWT_SECRET
+const refreshExpiresIn: string | number | undefined = isTestingEnvironment ? '1m' : process.env.JWT_REFRESH_EXPIRATION_TIME
+const accessExpiresIn: string | number | undefined = isTestingEnvironment ? '1m' : process.env.JWT_ACCESS_EXPIRATION_TIME
 
 export class InMemoryAuthRepository implements AuthRepository {
-  public users: ExistingUsers = [{email: 'a@aa.com', password: '$2b$10$c8RlA86Wpdxcf1hdrs6SZepYlSkT7YAZVLnFmsemahBNfsLjhdT/e', id: 1}]
+  public users: ExistingUsers = [{ email: 'a@aa.com', password: '$2b$10$c8RlA86Wpdxcf1hdrs6SZepYlSkT7YAZVLnFmsemahBNfsLjhdT/e', id: 1 }]
   tokenRepository: TokenRepository
-  constructor(tokenRepository: TokenRepository) {
+  constructor (tokenRepository: TokenRepository) {
     this.tokenRepository = tokenRepository
   }
-  async register(user: NewUser): Promise<RegisterUserResponse | RegisterUserResponseError> {
+
+  async register (user: NewUser): Promise<RegisterUserResponse | RegisterUserResponseError> {
     // Check if the user already exists
     const existingUser = this.users.find(existingUser => existingUser.email === user.email)
 
     // If exists return promise with conflict error message
-    if (existingUser) {
+    if (existingUser !== undefined) {
       const response: RegisterUserResponseError = {
         data: {
           status: 409,
-          message: "User already exists",
-        },
+          message: 'User already exists'
+        }
       }
-      return Promise.resolve(response)
+      return await Promise.resolve(response)
     }
 
     // Otherwise compare passwords
-    const hashedPassword = await bcrypt.hash(user.password, 10);
+    const hashedPassword = await bcrypt.hash(user.password, 10)
 
     // Then add user to in-memory DB with hashed password
     this.users.push({ ...user, password: hashedPassword, id: 1 })
     const { password, ...rest } = this.users.slice(-1)[0]
 
-    if (!secretKey) throw new Error('NO SECRET')
-
+    if (secretKey === undefined) throw new Error('NO SECRET')
 
     // Finally return promise with created user without password
     const payload = { email: user.email }
     const accessToken = this.tokenRepository.sign(payload, accessExpiresIn)
     const refreshToken = this.tokenRepository.sign(payload, refreshExpiresIn)
-    const response: RegisterUserResponse = {
+    return {
       data: {
         status: 201,
-        message: "User successfully registered",
+        message: 'User successfully registered',
         user: {
           ...rest
-        },
+        }
       },
       tokens: {
         accessToken: accessToken ?? '',
         refreshToken: refreshToken ?? ''
       }
     }
-    return Promise.resolve(response)
   }
 
-  async login(credentials: Credentials): Promise<LoginUserResponse | LoginUserResponseError> {
+  async login (credentials: Credentials): Promise<LoginUserResponse | LoginUserResponseError> {
     // Check if the user exists
     const user = this.users.find(user => user.email === credentials.email)
 
     // If it doesn't exist return promise with not found error message
-    if (!user) {
-      const response: LoginUserResponseError = {
+    if (user === undefined) {
+      return {
         data: {
           status: 404,
-          message: "No user found",
-        },
+          message: 'No user found'
+        }
       }
-      return Promise.resolve(response)
     }
 
     // Otherwise check if secret key exits and throw error if it doesn't
-    if (!secretKey) throw new Error('NO SECRET')
+    if (secretKey === undefined) throw new Error('NO SECRET')
 
     // If secret key exits compare passwords
-    const passwordMatch = await bcrypt.compare(credentials.password, user.password);
+    const passwordMatch = await bcrypt.compare(credentials.password, user.password)
     if (!passwordMatch) {
-      const response: LoginUserResponseError = {
+      return {
         data: {
           status: 401,
-          message: "Unauthorized",
-        },
+          message: 'Unauthorized'
+        }
       }
-      return Promise.resolve(response)
     }
 
     // If it exists return promise with found user with tokens and without password
     const payload = { email: user.email }
     const accessToken = this.tokenRepository.sign(payload, accessExpiresIn)
     const refreshToken = this.tokenRepository.sign(payload, refreshExpiresIn)
-    const response: LoginUserResponse = {
+    return {
       data: {
         status: 200,
         user: {
@@ -116,16 +112,14 @@ export class InMemoryAuthRepository implements AuthRepository {
         refreshToken: refreshToken ?? ''
       }
     }
-    return Promise.resolve(response)
   }
 
-  async logout(): Promise<any> {
-    const response = {
+  async logout (): Promise<any> {
+    return {
       data: {
         status: 200,
-        message: "User logged out successfully",
-      },
+        message: 'User logged out successfully'
+      }
     }
-    return Promise.resolve(response)
   }
 }

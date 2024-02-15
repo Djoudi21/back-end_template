@@ -1,36 +1,29 @@
-import {FastifyInstance} from "fastify";
+import { type FastifyInstance } from 'fastify'
 import { AuthController } from '../controllers/authController'
 import { TokenController } from '../controllers/tokenController'
-import { verifyAccessToken } from '../middlewares/verifyAccessToken'
 
 const authController = new AuthController()
 const tokenController = new TokenController()
 
-export async function router(fastify: FastifyInstance) {
-    fastify.route({
-        method: 'POST',
-        url: '/register',
-        handler: authController.register,
-    })
-    fastify.route({
-        method: 'POST',
-        url: '/login',
-        handler: authController.login,
-    })
-    fastify.route({
-        method: 'GET',
-        url: '/logout',
-        handler: authController.logout,
-    })
-    fastify.route({
-        method: 'POST',
-        url: '/generate-access',
-        handler: tokenController.generateAccess,
-    })
-    fastify.route({
-        method: 'POST',
-        url: '/test',
-        handler: tokenController.toto,
-        preHandler: verifyAccessToken
-    })
+export async function router (fastify: FastifyInstance) {
+  fastify.route({
+    method: 'POST',
+    url: '/register',
+    handler: authController.register
+  })
+  fastify.route({
+    method: 'POST',
+    url: '/login',
+    handler: authController.login
+  })
+  fastify.route({
+    method: 'GET',
+    url: '/logout',
+    handler: authController.logout
+  })
+  fastify.route({
+    method: 'POST',
+    url: '/generate-access',
+    handler: tokenController.generateAccess
+  })
 }
