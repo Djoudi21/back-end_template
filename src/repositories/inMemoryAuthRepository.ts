@@ -18,7 +18,7 @@ const refreshExpiresIn: string | number = isTestingEnvironment ? '1m' : process.
 const accessExpiresIn: string | number = isTestingEnvironment ? '1m' : process.env.JWT_ACCESS_EXPIRATION_TIME ?? '2m'
 
 export class InMemoryAuthRepository implements AuthRepository {
-  public users: ExistingUsers = [{ email: 'a@aa.com', password: '$2b$10$c8RlA86Wpdxcf1hdrs6SZepYlSkT7YAZVLnFmsemahBNfsLjhdT/e', id: 1 }]
+  public users: ExistingUsers = [{ email: 'a@a.com', password: '$2b$10$c8RlA86Wpdxcf1hdrs6SZepYlSkT7YAZVLnFmsemahBNfsLjhdT/e', id: 1 }]
   tokenRepository: TokenRepository
   constructor (tokenRepository: TokenRepository) {
     this.tokenRepository = tokenRepository
@@ -30,13 +30,12 @@ export class InMemoryAuthRepository implements AuthRepository {
 
     // If exists return promise with conflict error message
     if (existingUser !== undefined) {
-      const response: RegisterUserResponseError = {
+      return {
         data: {
           status: 409,
           message: 'User already exists'
         }
       }
-      return await Promise.resolve(response)
     }
 
     // Otherwise compare passwords

@@ -1,13 +1,13 @@
-import {  NewUser } from './types'
-import { AuthRepository } from '../../../repositories/interfaces/authRepository'
-
+import { type NewUser, type RegisterUserResponse, type RegisterUserResponseError } from './types'
+import { type AuthRepository } from '../../../repositories/interfaces/authRepository'
 
 export class RegisterUserUseCase {
   authRepository: AuthRepository
-  constructor(authRepository: AuthRepository) {
+  constructor (authRepository: AuthRepository) {
     this.authRepository = authRepository
   }
-  execute(user: NewUser) {
-    return this.authRepository.register(user)
+
+  async execute (user: NewUser): Promise<RegisterUserResponse | RegisterUserResponseError> {
+    return await this.authRepository.register(user)
   }
 }
