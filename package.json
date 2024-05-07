@@ -4,7 +4,7 @@
   "scripts": {
     "dev": "nodemon ./src/server.ts",
     "format": "npx prettier . --write",
-    "test": "vitest",
+    "test:unit": "vitest --run",
     "prepare": "husky"
   },
   "dependencies": {
