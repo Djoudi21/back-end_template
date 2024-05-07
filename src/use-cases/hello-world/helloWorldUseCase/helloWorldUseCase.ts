@@ -3,11 +3,11 @@ import { type SayHelloResponse } from '../../../repositories/inMemoryHelloWorldR
 
 export class HelloWorldUseCase {
   helloWorldRepository: HelloWorldRepository
-  constructor (helloWorldRepository: HelloWorldRepository) {
+  constructor(helloWorldRepository: HelloWorldRepository) {
     this.helloWorldRepository = helloWorldRepository
   }
 
-  async execute (): Promise<SayHelloResponse> {
+  async execute(): Promise<SayHelloResponse> {
     return await this.helloWorldRepository.sayHello()
   }
 }

@@ -5,7 +5,9 @@ export interface SayHelloResponse {
   }
 }
 export class InMemoryHelloWorldRepository {
-  async sayHello (): Promise<SayHelloResponse> {
-    return await new Promise<SayHelloResponse>((resolve) => { resolve({ data: { message: 'Hello World', status: 200 } }) })
+  async sayHello(): Promise<SayHelloResponse> {
+    return await new Promise<SayHelloResponse>((resolve) => {
+      resolve({ data: { message: 'Hello World', status: 200 } })
+    })
   }
 }

@@ -2,7 +2,7 @@ import { InMemoryHelloWorldRepository } from '../repositories/inMemoryHelloWorld
 import { HelloWorldUseCase } from '../use-cases/hello-world/helloWorldUseCase/helloWorldUseCase'
 
 export class HelloWorldController {
-  async sayHello (req: any, reply: any): Promise<void> {
+  async sayHello(req: any, reply: any): Promise<void> {
     const helloWorldRepository = new InMemoryHelloWorldRepository()
     const sayHelloUseCase = new HelloWorldUseCase(helloWorldRepository)
     const response = await sayHelloUseCase.execute()
